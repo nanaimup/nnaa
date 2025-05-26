@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Absensi Otomatis dari Link QR</title>
+</head>
+<body>
+    <h2>Form Absensi Otomatis</h2>
+    <form id="absenForm">
+        <label>Nama:</label><br>
+        <input type="text" id="nama" required><br><br>
+        <label>Kelas:</label><br>
+        <input type="text" id="kelas" readonly><br><br>
+        <button type="submit">Absen</button>
+    </form>
+
+    <h3>Data Absensi:</h3>
+    <table id="dataAbsen" border="1">
+        <tr>
+            <th>Nama</th>
+            <th>Kelas</th>
+            <th>Waktu</th>
+        </tr>
+    </table>
+
+<script>
+    function getParameterByName(name) {
+        const url = window.location.href;
+        name = name.replace(/[\[\]]/g, '\\$&');
+        const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+        const results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    window.onload = function() {
+        const nama = getParameterByName('nama');
+        const kelas = getParameterByName('kelas');
+        if (nama) document.getElementById('nama').value = nama;
+        if (kelas) document.getElementById('kelas').value = kelas;
+    }
+
+    document.getElementById("absenForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        const nama = document.getElementById("nama").value.trim();
+        const kelas = document.getElementById("kelas").value.trim();
+        const waktu = new Date().toLocaleString();
+
+        if (!nama) {
+            alert("Nama tidak boleh kosong!");
+            return;
+        }
+
+        const table = document.getElementById("dataAbsen");
+        const rows = table.getElementsByTagName("tr");
+        for(let i=1; i<rows.length; i++) {
+            if(rows[i].cells[0].textContent === nama) {
+                alert("Siswa sudah absen!");
+                return;
+            }
+        }
+
+        const row = table.insertRow();
+        row.insertCell(0).textContent = nama;
+        row.insertCell(1).textContent = kelas;
+        row.insertCell(2).textContent = waktu;
+
+        alert("Absen berhasil! Terima kasih.");
+    });
+</script>
+
+</body>
+</html>
